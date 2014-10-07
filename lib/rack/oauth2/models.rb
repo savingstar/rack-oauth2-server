@@ -18,11 +18,11 @@ module Rack
           instance
         end
 
-        # Long, random and hexy.
+        # concatenate two uuid's since we want a 64 char string
         def secure_random
-          OpenSSL::Random.random_bytes(32).unpack("H*")[0]
+          (SecureRandom.uuid + SecureRandom.uuid).gsub("-","")
         end
-        
+
         # @private
         def create_indexes(&block)
           if block
@@ -35,7 +35,7 @@ module Rack
             @create_indexes = nil
           end
         end
- 
+
         # A Mongo::DB object.
         def database
           @database ||= Server.options.database
@@ -44,7 +44,7 @@ module Rack
           @database
         end
       end
- 
+
     end
   end
 end
