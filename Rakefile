@@ -15,6 +15,7 @@ end
 desc "Run all tests"
 Rake::TestTask.new do |task|
   task.test_files = FileList['test/**/*_test.rb']
+
   if Rake.application.options.trace
     #task.warning = true
     task.verbose = true
@@ -23,7 +24,8 @@ Rake::TestTask.new do |task|
   else
     task.verbose = true
   end
-    task.ruby_opts << "-I."
+
+  task.ruby_opts << "-I."
 end
 
 namespace :test do

@@ -510,10 +510,15 @@ module Rack
           require 'json'
           require 'openssl'
           require 'time'
+
+          jwt_decode_custom_options = {:leeway => (10 * 60)}
+
           # JWT.decode only returns the claims. Gotta get the header ourselves
+          # TODO : this is no longer true, JWT.decode returns both the payload and headers now
           header = JSON.parse(JWT.base64url_decode(assertion.split('.')[0]))
           algorithm = header['alg']
-          payload = JWT.decode(assertion, nil, false)
+          payload = JWT.decode(assertion, nil, false, jwt_decode_custom_options)
+          payload = payload[0]
 
           raise InvalidGrantError, "missing issuer claim" if !payload.has_key?('iss')
 
@@ -521,10 +526,12 @@ module Rack
           issuer = Issuer.from_identifier(issuer_identifier)
           raise InvalidGrantError, 'Invalid issuer' if issuer.nil?
           if algorithm =~ /^HS/
-            validated_payload = JWT.decode(assertion, issuer.hmac_secret, true)
+            validated_payload = JWT.decode(assertion, issuer.hmac_secret, true, jwt_decode_custom_options)
           elsif algorithm =~ /^RS/
-            validated_payload = JWT.decode(assertion, OpenSSL::PKey::RSA.new(issuer.public_key), true)
+            validated_payload = JWT.decode(assertion, OpenSSL::PKey::RSA.new(issuer.public_key), true, jwt_decode_custom_options)
           end
+
+          validated_payload = validated_payload[0] if validated_payload.is_a?(Array)
 
           raise InvalidGrantError, "missing principal claim" if !validated_payload.has_key?('prn')
           raise InvalidGrantError, "missing audience claim" if !validated_payload.has_key?('aud')
