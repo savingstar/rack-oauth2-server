@@ -20,7 +20,7 @@ module Rack
             fields[:created_at] = Time.now.to_i
             fields[:updated_at] = Time.now.to_i
             fields[:_id] = args[:identifier]
-            collection.insert(fields, :safe=>true)
+            collection.insert(fields, :w => 1)
             Server.new_instance self, fields
           end
 

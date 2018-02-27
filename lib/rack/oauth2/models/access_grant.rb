@@ -64,7 +64,7 @@ module Rack
           access_token = AccessToken.get_token_for(identity, client, scope, expires_in)
           self.access_token = access_token.token
           self.granted_at = Time.now.to_i
-          self.class.collection.update({ :_id=>code, :access_token=>nil, :revoked=>nil }, { :$set=>{ :granted_at=>granted_at, :access_token=>access_token.token } }, :safe=>true)
+          self.class.collection.update({ :_id=>code, :access_token=>nil, :revoked=>nil }, { :$set=>{ :granted_at=>granted_at, :access_token=>access_token.token } }, :w => 1)
           reload = self.class.collection.find_one({ :_id=>code, :revoked=>nil }, { :fields=>%w{access_token} })
           raise InvalidGrantError unless reload && reload["access_token"] == access_token.token
           return access_token

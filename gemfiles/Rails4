@@ -1,12 +1,12 @@
 source "https://rubygems.org/"
-gemspec :path=>"../"
+gemspec :path => "../"
 
-gem "sinatra", "~>1.3.0"
+gem "rails", "~> 4.0"
 
 group :development do
   gem "rake"
-  gem "thin"
-  gem "yard"
+  # gem "thin"
+  # gem "yard"
 end
 
 group :test do

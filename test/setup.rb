@@ -15,9 +15,12 @@ require "rack/oauth2/server/admin"
 
 ENV["RACK_ENV"] = "test"
 ENV["DB"] = "rack_oauth2_server_test"
-DATABASE = Mongo::Connection.new[ENV["DB"]]
-FRAMEWORK = ENV["FRAMEWORK"] || "sinatra"
 
+FRAMEWORK = ENV["FRAMEWORK"] || "sinatra"
+if FRAMEWORK != "rails4"
+  MONGO_CLIENT = Mongo::MongoClient.new("localhost", 27017)
+  DATABASE = MONGO_CLIENT.db(ENV["DB"])
+end
 
 $logger = Logger.new("test.log")
 $logger.level = Logger::DEBUG
@@ -37,7 +40,7 @@ when "sinatra", nil
   require "sinatra/base"
   puts "Testing with Sinatra #{Sinatra::VERSION}"
   require File.dirname(__FILE__) + "/sinatra/my_app"
-  
+
   class Test::Unit::TestCase
     def app
       Rack::Builder.new do
@@ -51,7 +54,31 @@ when "sinatra", nil
     end
   end
 
-when "rails"
+when "rails4"
+
+  RAILS_ENV = "test"
+  RAILS_ROOT = File.dirname(__FILE__) + "/rails4"
+  begin
+    require "rails"
+  rescue LoadError
+  end
+
+  # Rails 4.x
+  require "rack/oauth2/server/railtie"
+  require File.dirname(__FILE__) + "/rails4/config/environment"
+  puts "Testing with Rails #{Rails.version}"
+
+  class Test::Unit::TestCase
+    def app
+      ::Rails.application
+    end
+
+    def config
+      ::Rails.configuration.oauth
+    end
+  end
+
+when "rails3"
 
   RAILS_ENV = "test"
   RAILS_ROOT = File.dirname(__FILE__) + "/rails3"
@@ -65,7 +92,7 @@ when "rails"
     require "rack/oauth2/server/railtie"
     require File.dirname(__FILE__) + "/rails3/config/environment"
     puts "Testing with Rails #{Rails.version}"
-  
+
     class Test::Unit::TestCase
       def app
         ::Rails.application
@@ -83,7 +110,7 @@ when "rails"
     require "action_controller"
     require File.dirname(__FILE__) + "/rails2/config/environment"
     puts "Testing with Rails #{Rails.version}"
-  
+
     class Test::Unit::TestCase
       def app
         ActionController::Dispatcher.new

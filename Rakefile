@@ -2,7 +2,14 @@ require "rake/testtask"
 
 spec = Gem::Specification.load(Dir["*.gemspec"].first)
 
-GEMFILE_MAP = {"gemfiles/Rails2" => "Rails 2.3", "gemfiles/Rails3" => "Rails 3.x", "gemfiles/Sinatra1.1" => "Sinatra 1.1", "gemfiles/Sinatra1.2" => "Sinatra 1.2", "gemfiles/Sinatra1.3" => "Sinatra 1.3"}
+GEMFILE_MAP = {
+  "gemfiles/Rails2"     => "Rails 2.3",
+  "gemfiles/Rails3"     => "Rails 3.x",
+  "gemfiles/Rails4"     => "Rails 4.x",
+  "gemfiles/Sinatra1.1" => "Sinatra 1.1",
+  "gemfiles/Sinatra1.2" => "Sinatra 1.2",
+  "gemfiles/Sinatra1.3" => "Sinatra 1.3"
+}
 
 desc "Install dependencies"
 task :setup do
@@ -69,9 +76,10 @@ task :push=>["test:all", "build"] do
 end
 
 task :default do
-  ENV["FRAMEWORK"] = "rails"
+  ENV["FRAMEWORK"] = "rails4"
+
   begin
-    require "rails" # check for Rails3
+    require "rails" # check for Rails
   rescue LoadError
     begin
       require "initializer" # check for Rails2
@@ -79,11 +87,12 @@ task :default do
       ENV["FRAMEWORK"] = "sinatra"
     end
   end
+
   task("test").invoke
 end
 
 
-begin 
+begin
   require "yard"
   YARD::Rake::YardocTask.new do |doc|
     doc.files = FileList["lib/**/*.rb"]

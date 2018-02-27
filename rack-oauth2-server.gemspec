@@ -18,11 +18,11 @@ Gem::Specification.new do |spec|
                           "--webcvs", "http://github.com/assaf/#{spec.name}"
   spec.license          = "MIT"
 
-  spec.required_ruby_version = '>= 1.8.7'
-  spec.add_dependency "rack", "~>1.3.6"
-  spec.add_dependency "mongo", "~>1"
+  spec.required_ruby_version = '>= 1.9.3'
+  spec.add_dependency "rack", "~>1.5"
+  spec.add_dependency "mongo", "~> 1"
   spec.add_dependency "bson_ext"
-  spec.add_dependency "sinatra", "~>1.3"
+  spec.add_dependency "sinatra", "~>1.4"
   spec.add_dependency "json"
   spec.add_dependency "jwt", "~> 1.0"
   spec.add_dependency "iconv"
@@ -32,5 +32,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'timecop', '~>0.5.9.1'
   spec.add_development_dependency 'ap', '~>0.1.1'
   spec.add_development_dependency 'crack', '~>0.3.2'
-  spec.add_development_dependency 'rails', '~>3.1'
+  spec.add_development_dependency 'rails', '~>4.2'
+  spec.add_development_dependency 'test-unit', '~> 3.2.7'
 end
